@@ -1,6 +1,6 @@
 {
   "name": "loopback4-multi-tenancy",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A LoopBack 4 extension for dynamic runtime connection and management of multitenant datasources.",
   "keywords": [
     "loopback-extension",
@@ -26,7 +26,15 @@
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "npm run clean && npm run build"
   },
-  "author": "Asim Jana",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asim-jana/loopback4-multi-tenancy.git"
+  },
+  "author": {
+    "name": "Asim Jana",
+    "email": "hello@asimjana.com",
+    "url": "https://asimjana.com"
+  },
   "license": "MIT",
   "files": [
     "README.md",

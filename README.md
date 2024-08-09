@@ -12,11 +12,11 @@ This package provides a robust multitenancy solution for Loopback 4 applications
 - **Dynamic Tenant Resolution:** Automatically resolve tenants based on the incoming request.
 - **Customizable Middleware:** Easily extend and customize the package for your specific needs.
 - **Support for Multiple Databases:** Manage tenant-specific databases or schemas.
-- **Flexible Tenant Detection Strategies:** Choose from multiple strategies to detect tenants, including:
-  - **Header-Based Detection:** Extract tenant information from request headers.
-  - **JWT-Based Detection:** Decode tenant information from JSON Web Tokens (JWTs).
-  - **Host-Based Detection:** Identify tenants based on the request's host or subdomain.
-  - **Query Parameter Detection:** Determine tenants using query parameters in the request URL.
+- **Flexible Tenant Detection Strategies:** Choose from a variety of strategies to detect tenants, allowing you to tailor the multitenancy implementation to your architecture:
+  - **Header-Based Detection:** Extract tenant information directly from the request headers, such as `x-tenant-id`.
+  - **JWT-Based Detection:** Decode tenant information from JSON Web Tokens (JWTs) passed in the Authorization header
+  - **Host-Based Detection:** Identify tenants based on the request's host or subdomain, useful for scenarios with tenant-specific domains.
+  - **Query Parameter Detection:** Determine tenants using query parameters in the request URL, such as tenant-id.
 
 ## Installation
 
@@ -30,9 +30,9 @@ npm install loopback4-multi-tenancy
 
 To integrate `loopback4-multi-tenancy` into your LoopBack 4 application, follow these steps:
 
-### 1. Add the Component
+### 1. Import and Add Component to Application
 
-Import and add the **MultiTenancyComponent** to your application:
+Import and add the `MultiTenancyComponent` to your application:
 
 ```ts
 import { MultiTenancyComponent } from 'loopback4-multi-tenancy';
@@ -50,20 +50,20 @@ export class MyApplication extends BootMixin(ServiceMixin(RepositoryMixin(RestAp
 ```
 
 ### 2. Configure Tenant Detection Strategies
-Set up the strategies to detect tenants. There are **four available strategies**: `header`, `jwt`, `query`, and `host`. The default strategy is **`header`**, but you can specify others:
+**Set up the strategies to detect tenants.** Four strategies are available — `header`, `jwt`, `query`, `host`. The default strategy is `header`, but you can specify others:
 
 ```ts
-import { MultiTenancyBindings, MultiTenancyActionOptions } from 'loopback4-multi-tenancy';
+import { MultiTenancyBindings, MultiTenancyOptions } from 'loopback4-multi-tenancy';
 
 // ...
 this
-  .configure<MultiTenancyActionOptions>(MultiTenancyBindings.ACTION)
+  .configure<MultiTenancyOptions>(MultiTenancyBindings.ACTION)
   .to({ strategyNames: ['jwt', 'header', 'query'] });
 // ...
 ```
 
-### 3. Add Action Provider to the Sequence
-If using an action-based sequence (not required for middleware-based sequences), add the datasource action provider to src/sequence.ts:
+### 3. Register MultiTenancy Action
+To enforce multitenancy before other actions, add `MultiTenancyAction` to your sequence (`src/sequence.ts`):
 
 ```ts
 import { MultiTenancyBindings, SetupMultitenancyFn } from 'loopback4-multi-tenancy';
@@ -85,7 +85,8 @@ export class MySequence implements SequenceHandler {
 ```
 
 ### 4. Access the Current Tenant
-Inject the current tenant into your controllers:
+To access the current tenant in your controllers, inject it as follows:
+Note: You should keep it at as last argument(cause its a optional argument)
 
 ```ts
 import { inject } from '@loopback/core';
@@ -95,10 +96,10 @@ import { User, UserRepository } from '../repositories';
 
 export class UserController {
   constructor(
-    @inject(MultiTenancyBindings.CURRENT_TENANT, { optional: true })
-    private tenant?: Tenant,
     @repository(UserRepository)
     public userRepository: UserRepository,
+    @inject(MultiTenancyBindings.CURRENT_TENANT, { optional: true })
+    private tenant?: Tenant,
   ) {}
 
   @post('/users', {
@@ -126,13 +127,13 @@ export class UserController {
 ```
 
 
-## Advanced Usage
+## 🚀 Advanced Usage
 
 For dynamically configuring datasources at runtime, follow these steps:
 
-### 1. Create a Datasource Provider
+### 1. Write a Datasource Config Provider
 
-Define a provider to generate datasource configurations based on the current tenant. This provider will be used to configure datasources as needed:
+To connect datasources dynamically at runtime, create a datasource provider:
 
 ```ts
 import { Provider } from '@loopback/core';
@@ -156,11 +157,11 @@ export class MultitenancyDatasourceConfigProvider implements Provider<Datasource
   }
 }
 ```
-### 2. 🚨 *[IMPORTANT]* Create a default datasource
-Create a default datasource for tenant. By default this datasource will be connected to the application and all the repositories of the tenant. This will be replace on run time. Assuming you are creating a new datasource with name **`tenant`**. This will use in next step.
+### 2. 🚨 *[IMPORTANT]* Create a Default Datasource
+Create a default datasource for the tenant. By default, this datasource will be connected to the application and all the repositories of the tenant. This will be replaced at runtime. Assuming you are creating a new datasource with the name `tenant`, this will be used in the next step
     
 ### 3. Configure Datasource Bind Key
-Provide the exact bindkey which is used in repository and datasource name of default tenant datasource. The default is **`tenant`**:
+Provide the exact bind key that is used in the repository and the datasource name of the default tenant datasource. The default is `tenant`:
 
 ```ts
 import { MultiTenancyBindings, DatasourceOptions } from 'loopback4-multi-tenancy';
@@ -184,7 +185,7 @@ export class UserRepository extends DefaultCrudRepository<User,
 }
 ```
 
-### 4. Bind the Provider in application.ts
+### 4. Bind the Provider in `application.ts`
 Bind the **MultitenancyDatasourceConfigProvider** to your application configuration:
 
 ```ts
@@ -234,7 +235,7 @@ export class MySequence implements SequenceHandler {
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/asim-jana/loopback4-multi-tenancy/blob/main/LICENSE) file for details.
 
 ## Feedback
 

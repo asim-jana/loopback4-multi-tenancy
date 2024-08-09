@@ -51,11 +51,11 @@ export class DatasourceActionProvider
       if (dataSourceConfig) {
         // console.log('Datasource found');
         try {
-          const datasourceProvider = await this.getDatasourceProvider(dataSourceConfig);
           const key = this.options.datasourceBindKey;
           const dbBindKey = `${RepositoryBindings.DATASOURCES}.${key}.${currentTenant.id}`;
           if (!this.application.isBound(dbBindKey)) {
             // console.log("Bind new datasource");
+            const datasourceProvider = await this.getDatasourceProvider(dataSourceConfig);
             this.application
               .bind(dbBindKey)
               .to(datasourceProvider)

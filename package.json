@@ -38,6 +38,7 @@
   "license": "MIT",
   "files": [
     "README.md",
+    "LICENSE",
     "dist",
     "src",
     "!*/__tests__"

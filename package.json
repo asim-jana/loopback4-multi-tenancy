@@ -1,6 +1,6 @@
 {
   "name": "loopback4-multi-tenancy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A LoopBack 4 extension for dynamic runtime connection and management of multitenant datasources.",
   "keywords": [
     "loopback-extension",

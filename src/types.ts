@@ -37,7 +37,8 @@ export interface SetupMultitenancyFn {
 }
 
 export interface DatasourceOptions {
-  datasourceBindKey: string;
+  datasourceBindKey?: string;
+  datasourceBindMethod?: 'database' | 'tenantId';
 }
 
 export interface DataSourceConfig {

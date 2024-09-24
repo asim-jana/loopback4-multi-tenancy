@@ -41,7 +41,7 @@ export class DatasourceProvider implements Provider<DatasourceProviderFn> {
         // console.error('Datasource returned error:', err);
         reject(err); // Reject the promise if there's an error
       });
-      ds.connect(); // Start the connection
+      // ds.connect(); // Start the connection
     });
   }
 }

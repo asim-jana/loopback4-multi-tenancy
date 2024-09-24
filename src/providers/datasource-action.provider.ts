@@ -24,6 +24,7 @@ export class DatasourceActionProvider
     @config()
     private options: DatasourceOptions = {
       datasourceBindKey: 'tenant',
+      datasourceBindMethod: 'tenantId'
     },
     @inject(MultiTenancyBindings.DATASOURCE_CONFIG)
     private readonly getDatasourceConfig: DatasourceConfigFn,
@@ -52,7 +53,8 @@ export class DatasourceActionProvider
         // console.log('Datasource found');
         try {
           const key = this.options.datasourceBindKey;
-          const dbBindKey = `${RepositoryBindings.DATASOURCES}.${key}.${currentTenant.id}`;
+          const dataKey = this.options.datasourceBindMethod == 'database' ? dataSourceConfig.database : currentTenant.id;
+          const dbBindKey = `${RepositoryBindings.DATASOURCES}.${key}.${dataKey}`;
           if (!this.application.isBound(dbBindKey)) {
             // console.log("Bind new datasource");
             const datasourceProvider = await this.getDatasourceProvider(dataSourceConfig);
